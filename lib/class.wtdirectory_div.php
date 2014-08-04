@@ -306,6 +306,10 @@ class wtdirectory_div extends \TYPO3\CMS\Frontend\Plugin\AbstractPlugin {
 	 * @return	integer		Address Uid
 	 */
 	public function getAddressFromNews($uid) {
+		if (!\TYPO3\CMS\Core\Utility\ExtensionManagementUtility::isLoaded('tt_news')) {
+			return 0;
+		}
+
 		if ($uid > 0) { // if there is an uid given
 			$res = $GLOBALS['TYPO3_DB']->exec_SELECTquery ( // DB query
 				'tx_wtdirectory_author auid',

@@ -9,31 +9,32 @@ $confArr = unserialize($GLOBALS['TYPO3_CONF_VARS']['EXT']['extConf']['wt_directo
 \TYPO3\CMS\Core\Utility\ExtensionManagementUtility::addStaticFile($_EXTKEY, 'static/autocomplete/', 'AJAX Autocompleter');
 \TYPO3\CMS\Core\Utility\ExtensionManagementUtility::addStaticFile($_EXTKEY, 'static/drilldown/', 'Category Drilldown');
 
-// Add contact field to tt_news
-$tmpColumns = array (
-	'tx_wtdirectory_author' => array (
-		'exclude' => 1,
-		'label' => 'LLL:EXT:wt_directory/locallang_db.xml:tt_news.tx_wtdirectory_author',
-		'config' => array (
-			'type' => 'select',
-			'items' => Array (
-				array(
-					'', 
-					0
+if (\TYPO3\CMS\Core\Utility\ExtensionManagementUtility::isLoaded('tt_news')) {
+	// Add contact field to tt_news
+	$tmpColumns = array (
+		'tx_wtdirectory_author' => array (
+			'exclude' => 1,
+			'label' => 'LLL:EXT:wt_directory/locallang_db.xml:tt_news.tx_wtdirectory_author',
+			'config' => array (
+				'type' => 'select',
+				'items' => Array (
+					array(
+						'',
+						0
+					),
 				),
-			),
-			'foreign_table' => 'tt_address',
-			'foreign_table_where' => 'ORDER BY tt_address.last_name',
-			'size' => 1,
-			'minitems' => 0,
-			'maxitems' => 1,
-		)
-	),
-);
-#\TYPO3\CMS\Core\Utility\GeneralUtility::loadTCA('tt_news');
-\TYPO3\CMS\Core\Utility\ExtensionManagementUtility::addTCAcolumns('tt_news', $tmpColumns, 1);
-\TYPO3\CMS\Core\Utility\ExtensionManagementUtility::addToAllTCAtypes('tt_news', 'tx_wtdirectory_author;;;;1-1-1');
-
+				'foreign_table' => 'tt_address',
+				'foreign_table_where' => 'ORDER BY tt_address.last_name',
+				'size' => 1,
+				'minitems' => 0,
+				'maxitems' => 1,
+			)
+		),
+	);
+	#\TYPO3\CMS\Core\Utility\GeneralUtility::loadTCA('tt_news');
+	\TYPO3\CMS\Core\Utility\ExtensionManagementUtility::addTCAcolumns('tt_news', $tmpColumns, 1);
+	\TYPO3\CMS\Core\Utility\ExtensionManagementUtility::addToAllTCAtypes('tt_news', 'tx_wtdirectory_author;;;;1-1-1');
+}
 
 #\TYPO3\CMS\Core\Utility\GeneralUtility::loadTCA('tt_content');
 $TCA['tt_content']['types']['list']['subtypes_excludelist'][$_EXTKEY . '_pi1'] = 'layout,select_key';
