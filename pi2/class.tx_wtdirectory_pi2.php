@@ -22,10 +22,7 @@
 *  This copyright notice MUST APPEAR in all copies of the script!
 ***************************************************************/
 
-require_once(PATH_tslib . 'class.tslib_pibase.php');
-require_once(t3lib_extMgm::extPath('wt_directory') . 'lib/class.wtdirectory_div.php'); // load div class
-require_once(t3lib_extMgm::extPath('wt_directory') . 'lib/class.wtdirectory_dynamicmarkers.php'); // file for dynamicmarker functions
-if(t3lib_extMgm::isLoaded('wt_doorman', 0)) require_once(t3lib_extMgm::extPath('wt_doorman') . 'class.tx_wtdoorman_security.php'); // load security class
+#if(\TYPO3\CMS\Core\Utility\ExtensionManagementUtility::isLoaded('wt_doorman', 0)) require_once(\TYPO3\CMS\Core\Utility\ExtensionManagementUtility::extPath('wt_doorman') . 'class.tx_wtdoorman_security.php'); // load security class
 
 
 /**
@@ -35,7 +32,7 @@ if(t3lib_extMgm::isLoaded('wt_doorman', 0)) require_once(t3lib_extMgm::extPath('
  * @package	TYPO3
  * @subpackage	tx_wtdirectory
  */
-class tx_wtdirectory_pi2 extends tslib_pibase {
+class tx_wtdirectory_pi2 extends \TYPO3\CMS\Frontend\Plugin\AbstractPlugin {
 
 	var $extKey        = 'wt_directory';	// The extension key.
 	var $prefixId      = 'tx_wtdirectory_pi2';		// Same as class name
@@ -53,7 +50,7 @@ class tx_wtdirectory_pi2 extends tslib_pibase {
 		$this->pi_initPIflexForm();
 		$this->pi_USER_INT_obj =	 1;	// USER
 
-		$this->dynamicMarkers = t3lib_div::makeInstance('tx_wtdirectory_dynamicmarkers'); // New object: TYPO3 dynamicmarker function
+		$this->dynamicMarkers = \TYPO3\CMS\Core\Utility\GeneralUtility::makeInstance('tx_wtdirectory_dynamicmarkers'); // New object: TYPO3 dynamicmarker function
 
 		$this->setPageFilters();
 			// loading post values from the drilldown view
@@ -82,7 +79,7 @@ class tx_wtdirectory_pi2 extends tslib_pibase {
 	      }
 
 	    if (is_array($flexFormConf)) {
-	       $conf = t3lib_div::array_merge($conf, $flexFormConf);
+	       $conf = \TYPO3\CMS\Core\Utility\GeneralUtility::array_merge($conf, $flexFormConf);
 	    }
 	    foreach ($conf as $key=>$data ) {
 	        if (substr($key,-1)=='.') {
@@ -93,7 +90,7 @@ class tx_wtdirectory_pi2 extends tslib_pibase {
 	        }
 	  }
 		// Instances and security function
-		$this->div = t3lib_div::makeInstance('wtdirectory_div'); // Create new instance for div class
+		$this->div = \TYPO3\CMS\Core\Utility\GeneralUtility::makeInstance('wtdirectory_div'); // Create new instance for div class
 		#$this->secure(); // Security options for piVars
 		$this->check(); // Check if all is alright
 
@@ -151,9 +148,9 @@ class tx_wtdirectory_pi2 extends tslib_pibase {
 		$data[$GLOBALS['TSFE']->id]= $selected;
 		$GLOBALS['TSFE']->fe_user->setKey('ses','tx_wtdirectory_pi2',$data);
 
-		if ($this->conf['debug.']['drillDown.']['piVars']==1) 	t3lib_div::debug($this->piVars,'piVars');
-		if ($this->conf['debug.']['drillDown.']['conf']==1) 	t3lib_div::debug($this->conf,'conf');
-		if ($this->conf['debug.']['drillDown.']['getKey']==1) 	t3lib_div::debug($GLOBALS['TSFE']->fe_user->getKey('ses','tx_wtdirectory_pi2'));
+		if ($this->conf['debug.']['drillDown.']['piVars']==1) 	\TYPO3\CMS\Core\Utility\DebugUtility::debug($this->piVars,'piVars');
+		if ($this->conf['debug.']['drillDown.']['conf']==1) 	\TYPO3\CMS\Core\Utility\DebugUtility::debug($this->conf,'conf');
+		if ($this->conf['debug.']['drillDown.']['getKey']==1) 	\TYPO3\CMS\Core\Utility\DebugUtility::debug($GLOBALS['TSFE']->fe_user->getKey('ses','tx_wtdirectory_pi2'));
 
 
 		$rootCat = $this->conf['drillDown.']['root'];
@@ -246,7 +243,7 @@ class tx_wtdirectory_pi2 extends tslib_pibase {
 		if (class_exists('tx_wtdoorman_security')) {
 
 			// 2. settings for doorman
-			$this->sec = t3lib_div::makeInstance('tx_wtdoorman_security'); // Create new instance for security class
+			$this->sec = \TYPO3\CMS\Core\Utility\GeneralUtility::makeInstance('tx_wtdoorman_security'); // Create new instance for security class
 			$this->sec->secParams = array ( // Allowed piVars type (int, text, alphanum, "value")
 				'show' => 'int', // show should be integer
 				'list' => '"all","none"', // list should be "all" or "none"
@@ -263,7 +260,7 @@ class tx_wtdirectory_pi2 extends tslib_pibase {
 			if ($GLOBALS['TYPO3_CONF_VARS']['EXTCONF'][$this->extKey]['piVars_hook']) {
 			   foreach($GLOBALS['TYPO3_CONF_VARS']['EXTCONF'][$this->extKey]['piVars_hook'] as $_funcRef) {
 				  if ($_funcRef) {
-					 t3lib_div::callUserFunction($_funcRef, $this->sec, $this);
+					 \TYPO3\CMS\Core\Utility\GeneralUtility::callUserFunction($_funcRef, $this->sec, $this);
 				  }
 			   }
 			}
@@ -386,7 +383,7 @@ class tx_wtdirectory_pi2 extends tslib_pibase {
 			if ($TCA[$table] && ($languageField=$TCA[$table]['ctrl']['languageField']) && ($transOrigPointerField=$TCA[$table]['ctrl']['transOrigPointerField']))	{
 				if (!$TCA[$table]['ctrl']['transOrigPointerTable'])	{
 
-					t3lib_div::loadTCA($table);
+					\TYPO3\CMS\Core\Utility\GeneralUtility::loadTCA($table);
 
 					$enableFields = tslib_cObj::enableFields($table);
 
@@ -463,7 +460,7 @@ class tx_wtdirectory_pi2 extends tslib_pibase {
 								INNER JOIN tt_address_group ON tt_address_group_mm.uid_foreign = tt_address_group.uid
  								WHERE tt_address_group_mm.uid_foreign = ' . $additionalCatID . ')';
 				}
-				#t3lib_div::debug($SELECT . $FROM . $WHERE);
+				#\TYPO3\CMS\Core\Utility\DebugUtility::debug($SELECT . $FROM . $WHERE);
 				$res = $GLOBALS['TYPO3_DB']->sql_query($SELECT . $FROM . $WHERE );
 			}
 			else {
@@ -524,10 +521,10 @@ class tx_wtdirectory_pi2 extends tslib_pibase {
 			$pluginPiVars['catfilterOR']= $this->filters['catfilterOR'];
 		}
 
-		if ($this->conf['debug.']['beforemain.']['piVars']==1) t3lib_div::debug($this->piVars);
-		if ($this->conf['debug.']['beforemain.']['filters']==1) t3lib_div::debug($this->filters);
-		if ($this->conf['debug.']['beforemain.']['pluginPiVars']==1) t3lib_div::debug($pluginPiVars);
-		if ($this->conf['debug.']['beforemain.']['conf']==1) t3lib_div::debug($this->conf);
+		if ($this->conf['debug.']['beforemain.']['piVars']==1) \TYPO3\CMS\Core\Utility\DebugUtility::debug($this->piVars);
+		if ($this->conf['debug.']['beforemain.']['filters']==1) \TYPO3\CMS\Core\Utility\DebugUtility::debug($this->filters);
+		if ($this->conf['debug.']['beforemain.']['pluginPiVars']==1) \TYPO3\CMS\Core\Utility\DebugUtility::debug($pluginPiVars);
+		if ($this->conf['debug.']['beforemain.']['conf']==1) \TYPO3\CMS\Core\Utility\DebugUtility::debug($this->conf);
 	}
 
 	/*

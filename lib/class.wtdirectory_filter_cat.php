@@ -22,11 +22,7 @@
 *  This copyright notice MUST APPEAR in all copies of the script!
 ***************************************************************/
 
-require_once(PATH_tslib . 'class.tslib_pibase.php'); // include pibase
-require_once(t3lib_extMgm::extPath('wt_directory') . 'lib/class.wtdirectory_div.php'); // load div class
-require_once(t3lib_extMgm::extPath('wt_directory') . 'lib/class.wtdirectory_dynamicmarkers.php'); // file for dynamicmarker functions
-
-class tx_wtdirectory_filter_cat extends tslib_pibase {
+class tx_wtdirectory_filter_cat extends \TYPO3\CMS\Frontend\Plugin\AbstractPlugin {
 
 	public $extKey = 'wt_directory'; // Extension key
 	public $prefixId = 'tx_wtdirectory_pi1';		// Same as class name
@@ -47,9 +43,9 @@ class tx_wtdirectory_filter_cat extends tslib_pibase {
 		$this->piVars = $piVars;
 		$this->pi_loadLL();
 		$this->outerArray = $this->markerArray = $this->subpartArray = array(); $content_item = ''; // init
-		$this->div = t3lib_div::makeInstance('wtdirectory_div'); // Create new instance for div class
-		$this->notAllowedCategories = t3lib_div::trimExplode(',', $this->conf['filter.']['cat.']['disable'], 1); // some categories which are not allowed (via constants)
-		$this->dynamicMarkers = t3lib_div::makeInstance('tx_wtdirectory_dynamicmarkers'); // New object: TYPO3 dynamicmarker function
+		$this->div = \TYPO3\CMS\Core\Utility\GeneralUtility::makeInstance('wtdirectory_div'); // Create new instance for div class
+		$this->notAllowedCategories = \TYPO3\CMS\Core\Utility\GeneralUtility::trimExplode(',', $this->conf['filter.']['cat.']['disable'], 1); // some categories which are not allowed (via constants)
+		$this->dynamicMarkers = \TYPO3\CMS\Core\Utility\GeneralUtility::makeInstance('tx_wtdirectory_dynamicmarkers'); // New object: TYPO3 dynamicmarker function
 		$this->tmpl['filter']['cat'] = $this->cObj->getSubpart($this->cObj->fileResource($this->conf['template.']['search']),'###WTDIRECTORY_FILTER_CAT###'); // Load HTML Template
 		$this->tmpl['filter']['item'] = $this->cObj->getSubpart($this->tmpl['filter']['cat'], '###ITEM###'); // work on subpart 1
 		$this->languid = $GLOBALS['TSFE']->tmpl->setup['config.']['sys_language_uid'] ? $GLOBALS['TSFE']->tmpl->setup['config.']['sys_language_uid'] : 0; // current language uid

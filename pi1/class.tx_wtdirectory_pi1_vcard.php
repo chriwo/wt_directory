@@ -22,11 +22,8 @@
 *  This copyright notice MUST APPEAR in all copies of the script!
 ***************************************************************/
 
-require_once(PATH_tslib . 'class.tslib_pibase.php');
-require_once(t3lib_extMgm::extPath('wt_directory') . 'lib/class.wtdirectory_div.php'); // load div class
-require_once(t3lib_extMgm::extPath('wt_directory') . 'lib/class.wtdirectory_dynamicmarkers.php'); // file for dynamicmarker functions
 
-class tx_wtdirectory_pi1_vcard extends tslib_pibase {
+class tx_wtdirectory_pi1_vcard extends \TYPO3\CMS\Frontend\Plugin\AbstractPlugin {
 
 	var $extKey = 'wt_directory'; // Extension key
 	var $prefixId      = 'tx_wtdirectory_pi1';		// Same as class name
@@ -42,8 +39,8 @@ class tx_wtdirectory_pi1_vcard extends tslib_pibase {
 		$this->pi_loadLL();
 		$this->tmpl = $this->markerArray = array(); // init
 		$this->tmpl[$this->mode] = $this->cObj->getSubpart($this->cObj->fileResource($this->conf['template.'][$this->mode]), '###WTDIRECTORY_' . strtoupper($this->mode) . '###'); // Load HTML Template
-		$this->div = t3lib_div::makeInstance('wtdirectory_div'); // Create new instance for vcard class
-		$this->dynamicMarkers = t3lib_div::makeInstance('tx_wtdirectory_dynamicmarkers'); // New object: TYPO3 dynamicmarker function
+		$this->div = \TYPO3\CMS\Core\Utility\GeneralUtility::makeInstance('wtdirectory_div'); // Create new instance for vcard class
+		$this->dynamicMarkers = \TYPO3\CMS\Core\Utility\GeneralUtility::makeInstance('tx_wtdirectory_dynamicmarkers'); // New object: TYPO3 dynamicmarker function
 			
 		// Give me all datas of tt_address
 		$res = $GLOBALS['TYPO3_DB']->exec_SELECTquery ( // DB query
@@ -89,7 +86,7 @@ class tx_wtdirectory_pi1_vcard extends tslib_pibase {
 	function hook() {
 		if (is_array($GLOBALS['TYPO3_CONF_VARS']['EXTCONF'][$this->extKey][$this->mode])) { // Adds hook for processing
 			foreach ($GLOBALS['TYPO3_CONF_VARS']['EXTCONF'][$this->extKey][$this->mode] as $_classRef) {
-				$_procObj = &t3lib_div::getUserObj($_classRef);
+				$_procObj = &\TYPO3\CMS\Core\Utility\GeneralUtility::getUserObj($_classRef);
 				$_procObj->detail($this->markerArray, $this->conf, $this->piVars, $this->cObj, $this);
 			}
 		}

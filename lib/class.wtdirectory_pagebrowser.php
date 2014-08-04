@@ -22,11 +22,8 @@
 *  This copyright notice MUST APPEAR in all copies of the script!
 ***************************************************************/
 
-require_once(PATH_tslib.'class.tslib_pibase.php');
-require_once(t3lib_extMgm::extPath('wt_directory').'lib/class.wtdirectory_dynamicmarkers.php'); // file for dynamicmarker functions
 
-
-class tx_wtdirectory_pagebrowser extends tslib_pibase {
+class tx_wtdirectory_pagebrowser extends \TYPO3\CMS\Frontend\Plugin\AbstractPlugin {
 
 	var $extKey = 'wt_directory'; // Extension key
 	var $prefixId = 'tx_wtdirectory_pi1';		// Same as class name
@@ -40,7 +37,7 @@ class tx_wtdirectory_pagebrowser extends tslib_pibase {
 		$this->pbarray = $pbarray;
 		$this->markerArray = array();
 		$this->tmpl = array ('pagebrowser' => $this->cObj->getSubpart($this->cObj->fileResource($this->conf['template.']['pagebrowser']),'###WTDIRECTORY_PAGEBROWSER###')); // Load HTML Template for pagebrowser
-		$this->dynamicMarkers = t3lib_div::makeInstance('tx_wtdirectory_dynamicmarkers'); // New object: TYPO3 dynamicmarker function
+		$this->dynamicMarkers = \TYPO3\CMS\Core\Utility\GeneralUtility::makeInstance('tx_wtdirectory_dynamicmarkers'); // New object: TYPO3 dynamicmarker function
 		
 		// let's go
 		$this->markerArray['###CURRENT_MIN###'] = $this->pbarray['pointer'] + 1; // Current page: From

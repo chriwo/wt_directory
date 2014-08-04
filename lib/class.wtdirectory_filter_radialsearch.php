@@ -22,11 +22,8 @@
 *  This copyright notice MUST APPEAR in all copies of the script!
 ***************************************************************/
 
-require_once(PATH_tslib . 'class.tslib_pibase.php'); // include pibase
-require_once(t3lib_extMgm::extPath('wt_directory') . 'lib/class.wtdirectory_div.php'); // load div class
-require_once(t3lib_extMgm::extPath('wt_directory') . 'lib/class.wtdirectory_dynamicmarkers.php'); // file for dynamicmarker functions
 
-class tx_wtdirectory_filter_radialsearch extends tslib_pibase {
+class tx_wtdirectory_filter_radialsearch extends \TYPO3\CMS\Frontend\Plugin\AbstractPlugin {
 
 	public $extKey = 'wt_directory'; // Extension key
 	public $prefixId = 'tx_wtdirectory_pi1'; // Same as class name
@@ -46,14 +43,14 @@ class tx_wtdirectory_filter_radialsearch extends tslib_pibase {
 		$this->piVars = $pObj->piVars;
 		$this->content = ''; $this->tmpl = $this->markerArray = array();
 		$this->pi_loadLL();
-		$this->div = t3lib_div::makeInstance('wtdirectory_div'); // Create new instance for div class
-		$this->dynamicMarkers = t3lib_div::makeInstance('tx_wtdirectory_dynamicmarkers'); // New object: TYPO3 dynamicmarker function
+		$this->div = \TYPO3\CMS\Core\Utility\GeneralUtility::makeInstance('wtdirectory_div'); // Create new instance for div class
+		$this->dynamicMarkers = \TYPO3\CMS\Core\Utility\GeneralUtility::makeInstance('tx_wtdirectory_dynamicmarkers'); // New object: TYPO3 dynamicmarker function
 		$this->tmpl['filter'][$this->mode] = $this->cObj->getSubpart($this->cObj->fileResource($this->conf['template.']['search']), '###WTDIRECTORY_FILTER_' . strtoupper($this->mode) . '###'); // Load HTML Template
 		
 		// stop process if not needed
 		if (
 			$this->pi_getFFvalue($this->conf, $this->mode, 'list') != '1' || // if radialsearch is turned off
-			!t3lib_extMgm::isLoaded('rggooglemap', 0) // if googlemap is not installed
+			!\TYPO3\CMS\Core\Utility\ExtensionManagementUtility::isLoaded('rggooglemap', 0) // if googlemap is not installed
 		) {
 			return '';
 		}

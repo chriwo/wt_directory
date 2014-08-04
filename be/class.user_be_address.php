@@ -29,7 +29,7 @@ class user_be_address {
 		// config
 		$confArr = unserialize($GLOBALS['TYPO3_CONF_VARS']['EXT']['extConf']['wt_directory']); // Get config from localconf.php
 		$uid = preg_replace('/[^0-9]/', '', substr($pObj->returnUrl, strpos($pObj->returnUrl, '[tt_content]'))); // strange thing to get to the tt_content uid of wt_directory plugin
-		$startingpoint_array = explode('|', $pObj->cachedTSconfig['tt_content:' . $uid]['_THIS_ROW']['pages']); // step1: another strange thing to get to the startingpoint
+		$startingpoint_array = \TYPO3\CMS\Core\Utility\GeneralUtility::trimExplode('|', $pObj->cachedTSconfig['tt_content:' . $uid]['_THIS_ROW']['pages']); // step1: another strange thing to get to the startingpoint
 		$startingpoint = preg_replace('/[^0-9]/', '', $startingpoint_array[0]); // step2: another strange thing to get to the startingpoint
 		$whereadd = (is_numeric($startingpoint) && $startingpoint > 0 ? ' AND tt_address.pid IN (' . $startingpoint . ')' : ''); // addition for where clause
 		if ($confArr['companyNames'] != 1) { // show names

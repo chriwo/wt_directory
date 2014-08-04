@@ -22,9 +22,8 @@
 *  This copyright notice MUST APPEAR in all copies of the script!
 ***************************************************************/
 
-require_once(PATH_tslib.'class.tslib_pibase.php');
 
-class user_wtdirectory_pagebrowser extends tslib_pibase {
+class user_wtdirectory_pagebrowser extends \TYPO3\CMS\Frontend\Plugin\AbstractPlugin {
 
 	var $extKey = 'wt_directory'; // Extension key
 	var $prefixId = 'tx_wtdirectory_pi1'; // Same as class name

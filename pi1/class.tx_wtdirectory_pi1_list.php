@@ -22,17 +22,8 @@
 *  This copyright notice MUST APPEAR in all copies of the script!
 ***************************************************************/
 
-require_once(PATH_tslib . 'class.tslib_pibase.php');
-require_once(t3lib_extMgm::extPath('wt_directory') . 'lib/class.wtdirectory_div.php'); // load div class
-require_once(t3lib_extMgm::extPath('wt_directory') . 'lib/class.wtdirectory_markers.php'); // load markers class
-require_once(t3lib_extMgm::extPath('wt_directory') . 'lib/class.wtdirectory_filter_abc.php'); // load abc filter class
-require_once(t3lib_extMgm::extPath('wt_directory') . 'lib/class.wtdirectory_filter_search.php'); // load search filter class
-require_once(t3lib_extMgm::extPath('wt_directory') . 'lib/class.wtdirectory_filter_cat.php'); // load category filter class
-require_once(t3lib_extMgm::extPath('wt_directory') . 'lib/class.wtdirectory_filter_radialsearch.php'); // load radialsearch class
-require_once(t3lib_extMgm::extPath('wt_directory') . 'lib/class.wtdirectory_pagebrowser.php'); // load pagebrowser class
-require_once(t3lib_extMgm::extPath('wt_directory') . 'lib/class.wtdirectory_dynamicmarkers.php'); // file for dynamicmarker functions
 
-class tx_wtdirectory_pi1_list extends tslib_pibase {
+class tx_wtdirectory_pi1_list extends \TYPO3\CMS\Frontend\Plugin\AbstractPlugin {
 
 	public $extKey = 'wt_directory'; // Extension key
 	public $prefixId = 'tx_wtdirectory_pi1';		// Same as class name
@@ -56,23 +47,23 @@ class tx_wtdirectory_pi1_list extends tslib_pibase {
 		$this->tmpl = $this->wrappedSubpartArray = $this->query = array();
 		$this->content = '';
 		$i = $result = 0; // init
-		$this->div = t3lib_div::makeInstance('wtdirectory_div'); // Create new instance for div class
-		$this->markers = t3lib_div::makeInstance('wtdirectory_markers'); // Create new instance for div class
-		$this->filter_abc = t3lib_div::makeInstance('tx_wtdirectory_filter_abc'); // Create new instance for abcfilter class
-		$this->filter_search = t3lib_div::makeInstance('tx_wtdirectory_filter_search'); // Create new instance for searchfilter class
-		$this->filter_cat = t3lib_div::makeInstance('tx_wtdirectory_filter_cat'); // Create new instance for catfilter class
-		$this->filter_radialsearch = t3lib_div::makeInstance('tx_wtdirectory_filter_radialsearch'); // Create new instance for radialsearch class
-		$this->pagebrowser = t3lib_div::makeInstance('tx_wtdirectory_pagebrowser'); // Create new instance for pagebrowser class
-		$this->dynamicMarkers = t3lib_div::makeInstance('tx_wtdirectory_dynamicmarkers'); // New object: TYPO3 dynamicmarker function
+		$this->div = \TYPO3\CMS\Core\Utility\GeneralUtility::makeInstance('wtdirectory_div'); // Create new instance for div class
+		$this->markers = \TYPO3\CMS\Core\Utility\GeneralUtility::makeInstance('wtdirectory_markers'); // Create new instance for div class
+		$this->filter_abc = \TYPO3\CMS\Core\Utility\GeneralUtility::makeInstance('tx_wtdirectory_filter_abc'); // Create new instance for abcfilter class
+		$this->filter_search = \TYPO3\CMS\Core\Utility\GeneralUtility::makeInstance('tx_wtdirectory_filter_search'); // Create new instance for searchfilter class
+		$this->filter_cat = \TYPO3\CMS\Core\Utility\GeneralUtility::makeInstance('tx_wtdirectory_filter_cat'); // Create new instance for catfilter class
+		$this->filter_radialsearch = \TYPO3\CMS\Core\Utility\GeneralUtility::makeInstance('tx_wtdirectory_filter_radialsearch'); // Create new instance for radialsearch class
+		$this->pagebrowser = \TYPO3\CMS\Core\Utility\GeneralUtility::makeInstance('tx_wtdirectory_pagebrowser'); // Create new instance for pagebrowser class
+		$this->dynamicMarkers = \TYPO3\CMS\Core\Utility\GeneralUtility::makeInstance('tx_wtdirectory_dynamicmarkers'); // New object: TYPO3 dynamicmarker function
 		$this->tmpl['list']['all'] = $this->cObj->getSubpart($this->cObj->fileResource($this->conf['template.']['list']), '###WTDIRECTORY_LIST###'); // Load HTML Template
 		$this->tmpl['list']['item'] = $this->cObj->getSubpart($this->tmpl['list']['all'], '###ITEM###'); // work on subpart 2
 		$this->languid = $GLOBALS['TSFE']->tmpl->setup['config.']['sys_language_uid'] ? $GLOBALS['TSFE']->tmpl->setup['config.']['sys_language_uid'] : 0; // current language uid
 
 		if ($this->conf['debug.']['beforemain.']['piVars'] == 1) {
-			t3lib_div::debug($this->piVars, 'wt_directory: piVars');
+			\TYPO3\CMS\Core\Utility\DebugUtility::debug($this->piVars, 'wt_directory: piVars');
 		}
 		if ($this->conf['debug.']['beforemain.']['conf'] == 1) {
-			t3lib_div::debug($this->conf, 'wt_directory: TypoScript');
+			\TYPO3\CMS\Core\Utility\DebugUtility::debug($this->conf, 'wt_directory: TypoScript');
 		}
 
 		if (!$this->pi_getFFvalue($this->conf, 'shownone', 'mainconfig') || count($this->piVars) > 0) { // default mode (show entries at the beginning)
@@ -95,14 +86,14 @@ class tx_wtdirectory_pi1_list extends tslib_pibase {
 			);
 
 			if ($this->conf['debug.']['beforemain.']['sql'] == 1) {
-				t3lib_div::debug($GLOBALS['TYPO3_DB']->debug_lastBuiltQuery);
+				\TYPO3\CMS\Core\Utility\DebugUtility::debug($GLOBALS['TYPO3_DB']->debug_lastBuiltQuery);
 			}
 			$num = $GLOBALS['TYPO3_DB']->sql_num_rows($res); // numbers of all entries
 			if ($res) { // If there is a result
 				while ($row = $GLOBALS['TYPO3_DB']->sql_fetch_assoc($res)) { // One loop for every tt_address entry
 
 					$row['addressgroup'] = $this->div->getAddressgroups($row['ttaddress_uid'], $this->conf, $this->cObj); // Overwrite group name
-					$allowedFields = t3lib_div::trimExplode(',', $this->pi_getFFvalue($this->conf, 'field', 'list'), 1);
+					$allowedFields = \TYPO3\CMS\Core\Utility\GeneralUtility::trimExplode(',', $this->pi_getFFvalue($this->conf, 'field', 'list'), 1);
 					$row['country'] = $this->div->getCountryFromCountryCode($row['country'], $this); // rewrite Lang ISO Code with Country Title from static_info_tables
 					if ($currentAddressGroup <> $row['tt_address_group_title']) {
 						// store the new group 
@@ -145,7 +136,7 @@ class tx_wtdirectory_pi1_list extends tslib_pibase {
 					if ($this->pi_getFFvalue($this->conf, 'target', 'powermail')) { // Link to powermail page
 						$this->wrappedSubpartArray['###WTDIRECTORY_POWERMAIL_LINK###'] = $this->cObj->typolinkWrap( array('parameter' => $this->pi_getFFvalue($this->conf, 'target', 'powermail'), 'additionalParams' => '&' . $this->prefixId . '[pm_receiver]=' . $row['ttaddress_uid'], 'useCacheHash' => 1) );
 					}
-					if (t3lib_extMgm::isLoaded('rggooglemap', 0)) { // Link to target page with tt_address uid for googlmaps
+					if (\TYPO3\CMS\Core\Utility\ExtensionManagementUtility::isLoaded('rggooglemap', 0)) { // Link to target page with tt_address uid for googlmaps
 						$this->wrappedSubpartArray['###WTDIRECTORY_GOOGLEMAP_LINK###'] = $this->cObj->typolinkWrap( array('parameter' => ($this->pi_getFFvalue($this->conf, 'target', 'googlemap') ? $this->pi_getFFvalue($this->conf, 'target', 'googlemap') : $GLOBALS['TSFE']->id), 'additionalParams' => $this->div->addFilterParams($this->piVars) . '&tx_rggooglemap_pi1[poi]=' . $row['ttaddress_uid'], 'useCacheHash' => 1) );
 					}
 					if ($this->div->alternate($i)) {
@@ -165,7 +156,7 @@ class tx_wtdirectory_pi1_list extends tslib_pibase {
 
 		$this->subpartArray = array('###CONTENT###' => $this->content_item); // work on subpart 3
 
-		$tmp_OuterSubpartArray = $this->markers->makeMarkers('list', $this->conf, $row, t3lib_div::trimExplode(',', $this->pi_getFFvalue($this->conf, 'field', 'list'), 1), $this->piVars); // get markerArray
+		$tmp_OuterSubpartArray = $this->markers->makeMarkers('list', $this->conf, $row, \TYPO3\CMS\Core\Utility\GeneralUtility::trimExplode(',', $this->pi_getFFvalue($this->conf, 'field', 'list'), 1), $this->piVars); // get markerArray
 		$this->OuterSubpartArray = array_merge((array) $this->OuterSubpartArray, (array) $tmp_OuterSubpartArray); // add markers array to existing array
 		if (!$result) { // no results
 			if (!$this->pi_getFFvalue($this->conf, 'shownone', 'mainconfig') || count($this->piVars) > 0) { // default mode
@@ -321,8 +312,8 @@ class tx_wtdirectory_pi1_list extends tslib_pibase {
 		}
 		
 		// Countryfilter
-		if (t3lib_extMgm::isLoaded('static_info_tables', 0) && $this->pi_getFFvalue($this->conf, 'countryfilter', 'mainconfig')) {
-			$countries = t3lib_div::trimExplode(',', $this->pi_getFFvalue($this->conf, 'countryfilter', 'mainconfig'), 1); // get countries
+		if (\TYPO3\CMS\Core\Utility\ExtensionManagementUtility::isLoaded('static_info_tables', 0) && $this->pi_getFFvalue($this->conf, 'countryfilter', 'mainconfig')) {
+			$countries = \TYPO3\CMS\Core\Utility\GeneralUtility::trimExplode(',', $this->pi_getFFvalue($this->conf, 'countryfilter', 'mainconfig'), 1); // get countries
 			$this->filter .= ' AND (';
 			for ($i = 0; $i < count($countries); $i++) { // one loop for every chosen country
 				$fields = $this->div->getCountriesTitlesFromUid($countries[$i]);
@@ -365,7 +356,7 @@ class tx_wtdirectory_pi1_list extends tslib_pibase {
 	public function hook($hookname) {
 		if (is_array($GLOBALS['TYPO3_CONF_VARS']['EXTCONF'][$this->extKey][$hookname])) { // Adds hook for processing
 			foreach ($GLOBALS['TYPO3_CONF_VARS']['EXTCONF'][$this->extKey][$hookname] as $_classRef) {
-				$_procObj = &t3lib_div::getUserObj($_classRef);
+				$_procObj = &\TYPO3\CMS\Core\Utility\GeneralUtility::getUserObj($_classRef);
 				$_procObj->mainList($this->conf, $this->piVars, $this->cObj, $this);
 			}
 		}

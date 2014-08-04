@@ -22,10 +22,7 @@
 *  This copyright notice MUST APPEAR in all copies of the script!
 ***************************************************************/
 
-require_once(PATH_tslib . 'class.tslib_pibase.php'); // include pibase
-require_once(t3lib_extMgm::extPath('wt_directory') . 'lib/class.wtdirectory_dynamicmarkers.php'); // file for dynamicmarker functions
-
-class tx_wtdirectory_filter_search extends tslib_pibase {
+class tx_wtdirectory_filter_search extends \TYPO3\CMS\Frontend\Plugin\AbstractPlugin {
 
 	public $extKey = 'wt_directory'; // Extension key
 	public $prefixId = 'tx_wtdirectory_pi1';		// Same as class name
@@ -46,16 +43,16 @@ class tx_wtdirectory_filter_search extends tslib_pibase {
 		$this->conf = $conf;
 		$this->piVars = $piVars;
 		$this->pi_loadLL();
-		$this->dynamicMarkers = t3lib_div::makeInstance('tx_wtdirectory_dynamicmarkers'); // New object: TYPO3 dynamicmarker function
-		$this->div = t3lib_div::makeInstance('wtdirectory_div'); // Create new instance for div class
+		$this->dynamicMarkers = \TYPO3\CMS\Core\Utility\GeneralUtility::makeInstance('tx_wtdirectory_dynamicmarkers'); // New object: TYPO3 dynamicmarker function
+		$this->div = \TYPO3\CMS\Core\Utility\GeneralUtility::makeInstance('wtdirectory_div'); // Create new instance for div class
 		$this->tmpl = $this->markerArray = $this->markerArray2 = $this->markerArray3 = $this->outerArray = $this->subpartArray = $this->subpartArray2 = array(); $content_item = $content_item2 = ''; $i=0; // init
 		$this->tmpl['filter']['search'] = $this->cObj->getSubpart($this->cObj->fileResource($this->conf['template.']['search']), '###WTDIRECTORY_FILTER_SEARCH###'); // Load HTML Template
 		$this->tmpl['filter']['item'] = $this->cObj->getSubpart($this->tmpl['filter']['search'], '###ITEM###'); // work on subpart 1
 		$this->tmpl['filter']['field_input'] = $this->cObj->getSubpart($this->cObj->fileResource($this->conf['template.']['search']), '###WTDIRECTORY_FILTER_SEARCH_INPUT###'); // work on subpart 1
 		$this->tmpl['filter']['field_select'] = $this->cObj->getSubpart($this->cObj->fileResource($this->conf['template.']['search']), '###WTDIRECTORY_FILTER_SEARCH_SELECT###'); // work on subpart 1
 		$this->tmpl['filter']['item_select'] = $this->cObj->getSubpart($this->tmpl['filter']['field_select'], '###ITEM_SELECT###'); // work on subpart 1
-		$this->searchfields = t3lib_div::trimExplode(',', $this->pi_getFFvalue($this->conf, 'search', 'list'), 1); // take searchfieldlist as an array
-		$selectfields = t3lib_div::trimExplode(',', $this->conf['filter.']['select'], 1);
+		$this->searchfields = \TYPO3\CMS\Core\Utility\GeneralUtility::trimExplode(',', $this->pi_getFFvalue($this->conf, 'search', 'list'), 1); // take searchfieldlist as an array
+		$selectfields = \TYPO3\CMS\Core\Utility\GeneralUtility::trimExplode(',', $this->conf['filter.']['select'], 1);
 
 		// Fill marker outside loop
 		$this->outerArray['###WTDIRECTORY_SEARCH_SUBMITVALUE###'] = $this->pi_getLL('wtdirectory_search_submitbutton', 'go'); // value or submit button
@@ -69,7 +66,7 @@ class tx_wtdirectory_filter_search extends tslib_pibase {
 			$this->markerArray2['###WTDIRECTORY_SEARCH_TYPE###'] = 'text'; // only text fields
 			$this->markerArray2['###WTDIRECTORY_SEARCH_VALUE###'] = ($this->piVars['filter'][$value] ? $this->piVars['filter'][$value] : ''); // method
 			$this->markerArray2['###WTDIRECTORY_SEARCH_LABEL###'] = $this->pi_getLL('wtdirectory_ttaddress_' . $value, ucfirst($value)); // Label for field
-			$this->markerArray2['###WTDIRECTORY_SEARCH_PATH###'] = t3lib_div::getIndpEnv('TYPO3_SITE_URL'); //relative serverpath
+			$this->markerArray2['###WTDIRECTORY_SEARCH_PATH###'] = \TYPO3\CMS\Core\Utility\GeneralUtility::getIndpEnv('TYPO3_SITE_URL'); //relative serverpath
 			$this->markerArray2['###WTDIRECTORY_PID###'] = ($this->cObj->data['pages'] > 0 ? $this->pi_getPidList($this->cObj->data['pages'], $this->cObj->data['recursive']) : ''); // selected pid
 			$this->markerArray2['###WTDIRECTORY_CAT###'] = ($this->pi_getFFvalue($this->conf, 'cat_join', 'mainconfig') > 0 && $this->pi_getFFvalue($this->conf, 'category', 'mainconfig') != '' ? $this->pi_getFFvalue($this->conf, 'category', 'mainconfig') : ''); // selected categories
 

@@ -22,11 +22,8 @@
 *  This copyright notice MUST APPEAR in all copies of the script!
 ***************************************************************/
 
-require_once(PATH_tslib . 'class.tslib_pibase.php');
-require_once(t3lib_extMgm::extPath('wt_directory') . 'lib/class.wtdirectory_dynamicmarkers.php'); // file for dynamicmarker functions
 
-
-class tx_wtdirectory_filter_abc extends tslib_pibase {
+class tx_wtdirectory_filter_abc extends \TYPO3\CMS\Frontend\Plugin\AbstractPlugin {
 
 	var $extKey = 'wt_directory'; // Extension key
 	var $prefixId = 'tx_wtdirectory_pi1';		// Same as class name
@@ -42,7 +39,7 @@ class tx_wtdirectory_filter_abc extends tslib_pibase {
 		$this->query_cat = $query_cat;
 		$this->query_pid = $query_pid;
 		$this->pi_loadLL();
-		$this->dynamicMarkers = t3lib_div::makeInstance('tx_wtdirectory_dynamicmarkers'); // New object: TYPO3 dynamicmarker function
+		$this->dynamicMarkers = \TYPO3\CMS\Core\Utility\GeneralUtility::makeInstance('tx_wtdirectory_dynamicmarkers'); // New object: TYPO3 dynamicmarker function
 		$this->tmpl = $this->markerArray = array(); $this->filter = ''; // init
 		$this->tmpl['filter']['abc'] = $this->cObj->getSubpart($this->cObj->fileResource($this->conf['template.']['search']), '###WTDIRECTORY_FILTER_ABC###'); // Load HTML Template
 		

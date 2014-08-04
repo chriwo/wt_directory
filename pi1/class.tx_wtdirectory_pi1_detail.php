@@ -22,12 +22,7 @@
 *  This copyright notice MUST APPEAR in all copies of the script!
 ***************************************************************/
 
-require_once(PATH_tslib . 'class.tslib_pibase.php');
-require_once(t3lib_extMgm::extPath('wt_directory') . 'lib/class.wtdirectory_div.php'); // load div class
-require_once(t3lib_extMgm::extPath('wt_directory') . 'lib/class.wtdirectory_markers.php'); // load markers class
-require_once(t3lib_extMgm::extPath('wt_directory') . 'lib/class.wtdirectory_dynamicmarkers.php'); // file for dynamicmarker functions
-
-class tx_wtdirectory_pi1_detail extends tslib_pibase {
+class tx_wtdirectory_pi1_detail extends \TYPO3\CMS\Frontend\Plugin\AbstractPlugin {
 
 	var $extKey = 'wt_directory'; // Extension key
 	var $prefixId = 'tx_wtdirectory_pi1';		// Same as class name
@@ -41,9 +36,9 @@ class tx_wtdirectory_pi1_detail extends tslib_pibase {
 		$this->piVars = $piVars; // make it global
 		$this->conf = $conf; // make it global
 		$this->pi_loadLL();
-		$this->div = t3lib_div::makeInstance('wtdirectory_div'); // Create new instance for div class
-		$this->markers = t3lib_div::makeInstance('wtdirectory_markers'); // Create new instance for div class
-		$this->dynamicMarkers = t3lib_div::makeInstance('tx_wtdirectory_dynamicmarkers'); // New object: TYPO3 dynamicmarker function
+		$this->div = \TYPO3\CMS\Core\Utility\GeneralUtility::makeInstance('wtdirectory_div'); // Create new instance for div class
+		$this->markers = \TYPO3\CMS\Core\Utility\GeneralUtility::makeInstance('wtdirectory_markers'); // Create new instance for div class
+		$this->dynamicMarkers = \TYPO3\CMS\Core\Utility\GeneralUtility::makeInstance('tx_wtdirectory_dynamicmarkers'); // New object: TYPO3 dynamicmarker function
 		$this->tmpl = array(); // init
 		$this->tmpl['detail'] = $this->cObj->getSubpart($this->cObj->fileResource($this->conf['template.']['detail']), '###WTDIRECTORY_DETAIL###'); // Load HTML Template
 		$this->languid = $GLOBALS['TSFE']->tmpl->setup['config.']['sys_language_uid'] ? $GLOBALS['TSFE']->tmpl->setup['config.']['sys_language_uid'] : 0; // current language uid
@@ -70,14 +65,14 @@ class tx_wtdirectory_pi1_detail extends tslib_pibase {
 					}
 					
 					// Markers
-					$this->markerArray = $this->markers->makeMarkers('detail', $this->conf, $row, t3lib_div::trimExplode(',', $this->pi_getFFvalue($this->conf, 'field', 'detail'), 1), $this->piVars); // get markerArray
+					$this->markerArray = $this->markers->makeMarkers('detail', $this->conf, $row, \TYPO3\CMS\Core\Utility\GeneralUtility::trimExplode(',', $this->pi_getFFvalue($this->conf, 'field', 'detail'), 1), $this->piVars); // get markerArray
 					$this->markerArray['###WTDIRECTORY_VCARD_ICON###'] = $this->conf['label.']['vCard']; // Image for vcard icon
 					$this->markerArray['###WTDIRECTORY_POWERMAIL_ICON###'] = $this->conf['label.']['powermail']; // Image for powermail icon
 					$this->wrappedSubpartArray['###WTDIRECTORY_VCARD_LINK###'] = $this->cObj->typolinkWrap( array('parameter' => $GLOBALS['TSFE']->id, 'additionalParams' => '&type=' . $this->vCardType . '&' . $this->prefixId . '[vCard]=' . $row['uid'], 'useCacheHash' => 1) ); // Link to same page with uid for vCard
 					if ($this->pi_getFFvalue($this->conf, 'target', 'powermail')) $this->wrappedSubpartArray['###WTDIRECTORY_POWERMAIL_LINK###'] = $this->cObj->typolinkWrap( array('parameter' => $this->pi_getFFvalue($this->conf, 'target', 'powermail'), 'additionalParams' => '&' . $this->prefixId . '[pm_receiver]=' . $row['uid'], 'useCacheHash' => 1) ); // Link to powermail page with uid for receiver manipulation
 					//$this->wrappedSubpartArray['###WTDIRECTORY_SPECIAL_BACKLINK###'] = $this->cObj->typolinkWrap( array('parameter' => ($this->pi_getFFvalue($this->conf, 'target', 'detail') ? $this->pi_getFFvalue($this->conf, 'target', 'detail') : $GLOBALS['TSFE']->id), 'useCacheHash' => 1) ); // Link to same page without GET params (Listview)
 					$this->wrappedSubpartArray['###WTDIRECTORY_SPECIAL_BACKLINK###'] = array( '<a href="' . $this->pi_linkTP_keepPIvars_url(array('show' => ''), 1, 0, ($this->pi_getFFvalue($this->conf, 'target', 'detail') ? $this->pi_getFFvalue($this->conf, 'target', 'detail') : $GLOBALS["TSFE"]->id)) . '">', '</a>');
-					if (t3lib_extMgm::isLoaded('rggooglemap',0)) $this->wrappedSubpartArray['###WTDIRECTORY_GOOGLEMAP_LINK###'] = $this->cObj->typolinkWrap( array('parameter' => ($this->pi_getFFvalue($this->conf, 'target', 'googlemap') ? $this->pi_getFFvalue($this->conf, 'target', 'googlemap') : $GLOBALS['TSFE']->id), 'additionalParams' => ($this->piVars['show'] ? '&' . $this->prefixId . '[show]=' . $this->piVars['show'] : '') . '&tx_rggooglemap_pi1[poi]=' . $row['uid'], 'useCacheHash' => 1) ); // Link to target page with tt_address uid for googlmaps
+					if (\TYPO3\CMS\Core\Utility\ExtensionManagementUtility::isLoaded('rggooglemap',0)) $this->wrappedSubpartArray['###WTDIRECTORY_GOOGLEMAP_LINK###'] = $this->cObj->typolinkWrap( array('parameter' => ($this->pi_getFFvalue($this->conf, 'target', 'googlemap') ? $this->pi_getFFvalue($this->conf, 'target', 'googlemap') : $GLOBALS['TSFE']->id), 'additionalParams' => ($this->piVars['show'] ? '&' . $this->prefixId . '[show]=' . $this->piVars['show'] : '') . '&tx_rggooglemap_pi1[poi]=' . $row['uid'], 'useCacheHash' => 1) ); // Link to target page with tt_address uid for googlmaps
 					
 					$this->hook(); // add hook
 					$this->content = $this->cObj->substituteMarkerArrayCached($this->tmpl['detail'], $this->markerArray, array(), $this->wrappedSubpartArray); // substitute Marker in Template
@@ -103,7 +98,7 @@ class tx_wtdirectory_pi1_detail extends tslib_pibase {
 	
 	// Function emailRedirect() opens Outlook Window with email for current address
 	function emailRedirect($email) {
-		if ($this->conf['detail.']['emailredirect'] == 1 && t3lib_div::validEmail($email)) { // only if email redirect activated and correct email
+		if ($this->conf['detail.']['emailredirect'] == 1 && \TYPO3\CMS\Core\Utility\GeneralUtility::validEmail($email)) { // only if email redirect activated and correct email
 			header('HTTP/1.1 302 Moved Temporarily'); 
 			header('Location: mailto:'.$email); 
 			header('Connection: close'); 
@@ -115,7 +110,7 @@ class tx_wtdirectory_pi1_detail extends tslib_pibase {
 	function hook() {
 		if (is_array($GLOBALS['TYPO3_CONF_VARS']['EXTCONF'][$this->extKey]['detail'])) { // Adds hook for processing
 			foreach ($GLOBALS['TYPO3_CONF_VARS']['EXTCONF'][$this->extKey]['detail'] as $_classRef) {
-				$_procObj = &t3lib_div::getUserObj($_classRef);
+				$_procObj = &\TYPO3\CMS\Core\Utility\GeneralUtility::getUserObj($_classRef);
 				$_procObj->detail($this->markerArray, $this->conf, $this->piVars, $this->cObj, $this);
 			}
 		}

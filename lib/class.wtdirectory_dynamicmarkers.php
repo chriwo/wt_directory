@@ -22,9 +22,8 @@
 *  This copyright notice MUST APPEAR in all copies of the script!
 ***************************************************************/
 
-require_once(PATH_tslib.'class.tslib_pibase.php');
 
-class tx_wtdirectory_dynamicmarkers extends tslib_pibase {
+class tx_wtdirectory_dynamicmarkers extends \TYPO3\CMS\Frontend\Plugin\AbstractPlugin {
 
     var $extKey = 'wt_directory';
     var $scriptRelPath = 'pi1/class.tx_wtdirectory_pi1.php';    // Path to pi1 to get locallang.xml from pi1 folder

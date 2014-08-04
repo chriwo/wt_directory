@@ -22,11 +22,11 @@
 *  This copyright notice MUST APPEAR in all copies of the script!
 ***************************************************************/
 
-require_once(PATH_t3lib . 'class.t3lib_befunc.php');
-require_once(PATH_t3lib . 'stddb/tables.php');
-require_once(PATH_tslib . 'class.tslib_pibase.php');
 
-class tx_wtdirectory_autocomplete extends tslib_pibase {
+#require_once(PATH_t3lib . 'class.t3lib_befunc.php');
+#require_once(PATH_t3lib . 'stddb/tables.php');
+
+class tx_wtdirectory_autocomplete extends \TYPO3\CMS\Frontend\Plugin\AbstractPlugin {
 
 	private $extKey = 'wt_directory'; // Extension key
 	private $limit = 100; // limit for db query
@@ -39,11 +39,11 @@ class tx_wtdirectory_autocomplete extends tslib_pibase {
 	 */
     public function main() {
 		// config
-		tslib_eidtools::connectDB();
-		$this->pid = htmlentities(t3lib_div::_GP('pid')); // GET param
-		$this->cat = htmlentities(t3lib_div::_GP('cat')); // GET param
-		$this->field = htmlentities(t3lib_div::_GP('field')); // GET param
-		$this->search = htmlentities(trim(t3lib_div::_GP('search'))); // GET param
+		#\TYPO3\CMS\Frontend\Utility\EidUtility::connectDB();
+		$this->pid = htmlentities(\TYPO3\CMS\Core\Utility\GeneralUtility::_GP('pid')); // GET param
+		$this->cat = htmlentities(\TYPO3\CMS\Core\Utility\GeneralUtility::_GP('cat')); // GET param
+		$this->field = htmlentities(\TYPO3\CMS\Core\Utility\GeneralUtility::_GP('field')); // GET param
+		$this->search = htmlentities(trim(\TYPO3\CMS\Core\Utility\GeneralUtility::_GP('search'))); // GET param
 		if (empty($this->field)) {
 			return $this->wrapToList($this->wrapToList('ERROR: No database field given'), 'ul'); // check if field was given otherwise return error
 		}
@@ -124,6 +124,6 @@ if (defined('TYPO3_MODE') && $TYPO3_CONF_VARS[TYPO3_MODE]['XCLASS']['ext/wt_dire
 	include_once($TYPO3_CONF_VARS[TYPO3_MODE]['XCLASS']['ext/wt_directory/lib/class.wtdirectory_eid_autocomplete.php']);
 }
 
-$SOBE = t3lib_div::makeInstance('tx_wtdirectory_autocomplete'); // make instance
+$SOBE = \TYPO3\CMS\Core\Utility\GeneralUtility::makeInstance('tx_wtdirectory_autocomplete'); // make instance
 echo $SOBE->main(); // print content
 ?>

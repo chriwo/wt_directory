@@ -54,7 +54,7 @@ class tx_wtdirectory_pi1_wizicon {
 		$LL = $this->includeLocalLang();
 
 		$wizardItems['plugins_tx_wtdirectory_pi1'] = array(
-			'icon'=>t3lib_extMgm::extRelPath('wt_directory').'pi1/ce_wiz.gif',
+			'icon'=>\TYPO3\CMS\Core\Utility\ExtensionManagementUtility::extRelPath('wt_directory').'pi1/ce_wiz.gif',
 			'title'=>$LANG->getLLL('pi1_title',$LL),
 			'description'=>$LANG->getLLL('pi1_plus_wiz_description',$LL),
 			'params'=>'&defVals[tt_content][CType]=list&defVals[tt_content][list_type]=wt_directory_pi1'
@@ -69,7 +69,7 @@ class tx_wtdirectory_pi1_wizicon {
 	 * @return array The array with language labels
 	 */
 	function includeLocalLang() {
-		$llFile = t3lib_extMgm::extPath('wt_directory') . 'locallang.xml';
+		$llFile = \TYPO3\CMS\Core\Utility\ExtensionManagementUtility::extPath('wt_directory') . 'locallang.xml';
 		$LOCAL_LANG = $this->llxmlParser->getParsedData($llFile, $GLOBALS['LANG']->lang, 'utf-8');
 		return $LOCAL_LANG;
 	}
@@ -79,7 +79,7 @@ class tx_wtdirectory_pi1_wizicon {
 	 */
 	protected function getLlxmlParser() {
 		if (!isset($this->llxmlParser)) {
-			$this->llxmlParser = t3lib_div::makeInstance('t3lib_l10n_parser_Llxml');
+			$this->llxmlParser = \TYPO3\CMS\Core\Utility\GeneralUtility::makeInstance('t3lib_l10n_parser_Llxml');
 		}
 		return $this->llxmlParser;
 	}

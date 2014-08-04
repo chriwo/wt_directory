@@ -22,10 +22,7 @@
 *  This copyright notice MUST APPEAR in all copies of the script!
 ***************************************************************/
 
-require_once(PATH_tslib . 'class.tslib_pibase.php');
-require_once(t3lib_extMgm::extPath('wt_directory') . 'lib/class.wtdirectory_div.php'); // load div class
-
-class wtdirectory_markers extends tslib_pibase {
+class wtdirectory_markers extends \TYPO3\CMS\Frontend\Plugin\AbstractPlugin {
 
 	public $extKey = 'wt_directory'; // Extension key
 	public $prefixId = 'tx_wtdirectory_pi1'; // Same as class name
@@ -59,7 +56,7 @@ class wtdirectory_markers extends tslib_pibase {
 		$this->tmpl = $markerArray = $markerArrayAll = $wrappedSubpartArray = $subpartArray = array(); $i = 0; // init
         $this->tmpl['all']['all'] = $this->cObj->getSubpart($this->cObj->fileResource($this->conf['template.']['ALLmarker']),'###WTDIRECTORY_ALL_' . strtoupper($what) . '###'); // Load HTML Template: ALL (works on subpart ###WTDIRECTORY_ALL###)
 		$this->tmpl['all']['item'] = $this->cObj->getSubpart($this->tmpl['all']['all'],"###ITEM###"); // Load HTML Template: ALL (works on subpart ###ITEM###)
-		$this->div = t3lib_div::makeInstance('wtdirectory_div'); // Create new instance for div class
+		$this->div = \TYPO3\CMS\Core\Utility\GeneralUtility::makeInstance('wtdirectory_div'); // Create new instance for div class
 		$this->cObj->start($row, 'tt_address'); // enable .field in typoscript for tt_address
 
 		// 1. Fill marker "all": ###WTDIRECTORY_SPECIAL_ALL###
@@ -87,7 +84,7 @@ class wtdirectory_markers extends tslib_pibase {
 			}
 			$wrappedSubpartArray['###WTDIRECTORY_SPECIAL_BACKLINK###'] = array( '<a href="' . $this->pi_linkTP_keepPIvars_url(array('show' => ''), 1, 0, ($this->pi_getFFvalue($this->conf, 'target', 'detail') ? $this->pi_getFFvalue($this->conf, 'target', 'detail') : $GLOBALS["TSFE"]->id)) . '">', '</a>');
 			if ($this->div->conditions4DetailLink($row, $what, $this->conf)) { // Link to same page with uid (Singleview)
-				$wrappedSubpartArray['###WTDIRECTORY_SPECIAL_DETAILLINK###'] = $this->cObj->typolinkWrap( array("parameter" => ($this->pi_getFFvalue($this->conf, 'target', 'list') ? $this->pi_getFFvalue($this->conf, 'target', 'list') : $GLOBALS["TSFE"]->id), 'additionalParams' => '&' . $this->prefixId . '[show]=' . $row['ttaddress_uid'] . ($this->conf['filter.']['list.']['clearOldFilter'] == 0 ? $this->div->piVars2string() : '') . ($this->conf['enable.']['googlemapOnDetail'] == 1 && t3lib_extMgm::isLoaded('rggooglemap',0) ? '&tx_rggooglemap_pi1[poi]=' . $row['ttaddress_uid'] : ''), "useCacheHash" => 1) );
+				$wrappedSubpartArray['###WTDIRECTORY_SPECIAL_DETAILLINK###'] = $this->cObj->typolinkWrap( array("parameter" => ($this->pi_getFFvalue($this->conf, 'target', 'list') ? $this->pi_getFFvalue($this->conf, 'target', 'list') : $GLOBALS["TSFE"]->id), 'additionalParams' => '&' . $this->prefixId . '[show]=' . $row['ttaddress_uid'] . ($this->conf['filter.']['list.']['clearOldFilter'] == 0 ? $this->div->piVars2string() : '') . ($this->conf['enable.']['googlemapOnDetail'] == 1 && \TYPO3\CMS\Core\Utility\ExtensionManagementUtility::isLoaded('rggooglemap',0) ? '&tx_rggooglemap_pi1[poi]=' . $row['ttaddress_uid'] : ''), "useCacheHash" => 1) );
 			}
 			if (($this->conf['enable.']['vCardForList'] == 1 && $what == 'list') || ($this->conf['enable.']['vCardForDetail'] == 1 && $what == 'detail')) { // only if vcard enabled in constants
 				$OuterMarkerArray['###WTDIRECTORY_VCARD_ICON###'] = $this->conf['label.']['vCard']; // Image for vcard icon
@@ -97,7 +94,7 @@ class wtdirectory_markers extends tslib_pibase {
 				if ($this->pi_getFFvalue($this->conf, 'target', 'powermail') > 0) $OuterMarkerArray['###WTDIRECTORY_POWERMAIL_ICON###'] = $this->conf['label.']['powermail']; // Image for powermail icon
 				if ($this->pi_getFFvalue($this->conf, 'target', 'powermail') > 0) $wrappedSubpartArray['###WTDIRECTORY_POWERMAIL_LINK###'] = $this->cObj->typolinkWrap( array("parameter" => $this->pi_getFFvalue($this->conf, 'target', 'powermail'), 'additionalParams' => '&' . $this->prefixId . '[pm_receiver]=' . ($what == 'list' ? $row['ttaddress_uid'] : $row['uid']), "useCacheHash" => 1) ); // Link to same page with powermailform with ?tx_wtdirectory_pi1[pm_receiver]=uid
 			}
-			if ($this->pi_getFFvalue($this->conf, 'enable', 'googlemap') == 1 && t3lib_extMgm::isLoaded('rggooglemap',0)) { // only if googlemap enabled in flexform && rggooglemap is installed
+			if ($this->pi_getFFvalue($this->conf, 'enable', 'googlemap') == 1 && \TYPO3\CMS\Core\Utility\ExtensionManagementUtility::isLoaded('rggooglemap',0)) { // only if googlemap enabled in flexform && rggooglemap is installed
 				$OuterMarkerArray['###WTDIRECTORY_GOOGLEMAP_LABEL###'] = $this->pi_getLL('wtdirectory_googlemaplink_label', 'Show in map'); // "Show in map"
 				$wrappedSubpartArray['###WTDIRECTORY_GOOGLEMAP_LINK###'] = $this->cObj->typolinkWrap ( array ( "parameter" => ($this->pi_getFFvalue($this->conf, 'target', 'googlemap') ? $this->pi_getFFvalue($this->conf, 'target', 'googlemap') : $GLOBALS["TSFE"]->id), 'additionalParams' => $this->div->addFilterParams($this->piVars) . ($this->piVars['show'] ? '&' . $this->prefixId . '[show]=' . $this->piVars['show'] : '') . '&tx_rggooglemap_pi1[poi]=' . ($what == 'list' ? $row['ttaddress_uid'] : $row['uid']), "useCacheHash" => 1 ) );  // Link to target page with tt_address uid for googlmaps
 			}
@@ -123,7 +120,7 @@ class wtdirectory_markers extends tslib_pibase {
 							$i++; // increase counter
 							$content_item .= $this->cObj->substituteMarkerArrayCached($this->tmpl['all']['item'], $markerArrayAll); // Add
 						} else {
-#							t3lib_div::debug($key);
+#							\TYPO3\CMS\Core\Utility\DebugUtility::debug($key);
 						}
 					}
 				}
@@ -135,7 +132,7 @@ class wtdirectory_markers extends tslib_pibase {
 				}
 				$wrappedSubpartArray['###WTDIRECTORY_SPECIAL_BACKLINK###'] = array( '<a href="' . $this->pi_linkTP_keepPIvars_url(array('show' => ''), 1, 0, ($this->pi_getFFvalue($this->conf, 'target', 'detail') ? $this->pi_getFFvalue($this->conf, 'target', 'detail') : $GLOBALS["TSFE"]->id)) . '">', '</a>');
 				if ($this->div->conditions4DetailLink($row, $what, $this->conf)) { // Link to same page with uid (Singleview)
-					$wrappedSubpartArray['###WTDIRECTORY_SPECIAL_DETAILLINK###'] = $this->cObj->typolinkWrap( array("parameter" => ($this->pi_getFFvalue($this->conf, 'target', 'list') ? $this->pi_getFFvalue($this->conf, 'target', 'list') : $GLOBALS["TSFE"]->id), 'additionalParams' => '&' . $this->prefixId . '[show]=' . $row['ttaddress_uid'] . ($this->conf['filter.']['list.']['clearOldFilter'] == 0 ? $this->div->piVars2string() : '') . ($this->conf['enable.']['googlemapOnDetail'] == 1 && t3lib_extMgm::isLoaded('rggooglemap',0) ? '&tx_rggooglemap_pi1[poi]=' . $row['ttaddress_uid'] : ''), "useCacheHash" => 1) );
+					$wrappedSubpartArray['###WTDIRECTORY_SPECIAL_DETAILLINK###'] = $this->cObj->typolinkWrap( array("parameter" => ($this->pi_getFFvalue($this->conf, 'target', 'list') ? $this->pi_getFFvalue($this->conf, 'target', 'list') : $GLOBALS["TSFE"]->id), 'additionalParams' => '&' . $this->prefixId . '[show]=' . $row['ttaddress_uid'] . ($this->conf['filter.']['list.']['clearOldFilter'] == 0 ? $this->div->piVars2string() : '') . ($this->conf['enable.']['googlemapOnDetail'] == 1 && \TYPO3\CMS\Core\Utility\ExtensionManagementUtility::isLoaded('rggooglemap',0) ? '&tx_rggooglemap_pi1[poi]=' . $row['ttaddress_uid'] : ''), "useCacheHash" => 1) );
 				}
 				if (($this->conf['enable.']['vCardForList'] == 1 && $what == 'list') || ($this->conf['enable.']['vCardForDetail'] == 1 && $what == 'detail')) { // only if vcard enabled in constants
 					$OuterMarkerArray['###WTDIRECTORY_VCARD_ICON###'] = $this->conf['label.']['vCard']; // Image for vcard icon
@@ -145,7 +142,7 @@ class wtdirectory_markers extends tslib_pibase {
 					if ($this->pi_getFFvalue($this->conf, 'target', 'powermail') > 0) $OuterMarkerArray['###WTDIRECTORY_POWERMAIL_ICON###'] = $this->conf['label.']['powermail']; // Image for powermail icon
 					if ($this->pi_getFFvalue($this->conf, 'target', 'powermail') > 0) $wrappedSubpartArray['###WTDIRECTORY_POWERMAIL_LINK###'] = $this->cObj->typolinkWrap( array("parameter" => $this->pi_getFFvalue($this->conf, 'target', 'powermail'), 'additionalParams' => '&' . $this->prefixId . '[pm_receiver]=' . ($what == 'list' ? $row['ttaddress_uid'] : $row['uid']), "useCacheHash" => 1) ); // Link to same page with powermailform with ?tx_wtdirectory_pi1[pm_receiver]=uid
 				}
-				if ($this->pi_getFFvalue($this->conf, 'enable', 'googlemap') == 1 && t3lib_extMgm::isLoaded('rggooglemap',0)) { // only if googlemap enabled in flexform && rggooglemap is installed
+				if ($this->pi_getFFvalue($this->conf, 'enable', 'googlemap') == 1 && \TYPO3\CMS\Core\Utility\ExtensionManagementUtility::isLoaded('rggooglemap',0)) { // only if googlemap enabled in flexform && rggooglemap is installed
 					$OuterMarkerArray['###WTDIRECTORY_GOOGLEMAP_LABEL###'] = $this->pi_getLL('wtdirectory_googlemaplink_label', 'Show in map'); // "Show in map"
 					$wrappedSubpartArray['###WTDIRECTORY_GOOGLEMAP_LINK###'] = $this->cObj->typolinkWrap ( array ( "parameter" => ($this->pi_getFFvalue($this->conf, 'target', 'googlemap') ? $this->pi_getFFvalue($this->conf, 'target', 'googlemap') : $GLOBALS["TSFE"]->id), 'additionalParams' => $this->div->addFilterParams($this->piVars) . ($this->piVars['show'] ? '&' . $this->prefixId . '[show]=' . $this->piVars['show'] : '') . '&tx_rggooglemap_pi1[poi]=' . ($what == 'list' ? $row['ttaddress_uid'] : $row['uid']), "useCacheHash" => 1 ) );  // Link to target page with tt_address uid for googlmaps
 				}

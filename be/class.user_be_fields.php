@@ -51,10 +51,11 @@ class user_be_fields {
 	 * @return	void
 	 */
 	public function main(&$params, &$pObj)	{
-		$res = mysql_query('SHOW COLUMNS FROM tt_address'); // mysql query
+		#$res = mysql_query('SHOW COLUMNS FROM tt_address'); // mysql query
+		$res = $GLOBALS['TYPO3_DB']->admin_query('SHOW COLUMNS FROM tt_address');
 		if ($res) { // If there is a result
 			$i = 0; // init counter
-			$this->tsconfig = t3lib_BEfunc::getModTSconfig($params['row']['pid'], 'wt_directory'); // get tsconfig from backend
+			$this->tsconfig = \TYPO3\CMS\Backend\Utility\BackendUtility::getModTSconfig($params['row']['pid'], 'wt_directory'); // get tsconfig from backend
 
 			if ($params['config']['itemsProcFuncArg'] == 'searchAll') {
 				// add the "all" value

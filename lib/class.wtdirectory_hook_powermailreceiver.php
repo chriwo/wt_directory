@@ -22,9 +22,8 @@
 *  This copyright notice MUST APPEAR in all copies of the script!
 ***************************************************************/
 
-require_once(PATH_tslib.'class.tslib_pibase.php');
 
-class tx_wtdirectory_powermailreceiver extends tslib_pibase {
+class tx_wtdirectory_powermailreceiver extends \TYPO3\CMS\Frontend\Plugin\AbstractPlugin {
 
 	var $extKey = 'wt_directory'; // Extension key
 	var $prefixId = 'tx_wtdirectory_pi1'; // Same as class name
@@ -46,7 +45,7 @@ class tx_wtdirectory_powermailreceiver extends tslib_pibase {
 			);
 			if ($res) $row = $GLOBALS['TYPO3_DB']->sql_fetch_assoc($res); // Result in array
 			
-			if (t3lib_div::validEmail($row['email'])) { // if this is a valid email address
+			if (\TYPO3\CMS\Core\Utility\GeneralUtility::validEmail($row['email'])) { // if this is a valid email address
 				
 				// Set Session
 				$GLOBALS['TSFE']->fe_user->setKey('ses', $this->extKey.'_'.$GLOBALS['TSFE']->id, array('powermailreceiver' => $row['email']));
@@ -75,7 +74,7 @@ class tx_wtdirectory_powermailreceiver extends tslib_pibase {
 		if ($subpart == 'recipient_mail') { // work only if mail to receiver
 			$rec_array = $GLOBALS['TSFE']->fe_user->getKey('ses', $this->extKey.'_'.$GLOBALS['TSFE']->id); // get email from wt_directory session
 			
-			if (t3lib_div::validEmail($rec_array['powermailreceiver'])) { // if this is a valid email address
+			if (\TYPO3\CMS\Core\Utility\GeneralUtility::validEmail($rec_array['powermailreceiver'])) { // if this is a valid email address
 				$maildata['receiver'] = $rec_array['powermailreceiver']; // change email receiver
 				$obj->MainReceiver = $rec_array['powermailreceiver']; // change email receiver (save db values)
 			}

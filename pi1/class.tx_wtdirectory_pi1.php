@@ -22,14 +22,9 @@
 *  This copyright notice MUST APPEAR in all copies of the script!
 ***************************************************************/
 
-require_once(PATH_tslib . 'class.tslib_pibase.php');
-require_once(t3lib_extMgm::extPath('wt_directory') . 'lib/class.wtdirectory_div.php'); // load div class
-require_once(t3lib_extMgm::extPath('wt_directory') . 'pi1/class.tx_wtdirectory_pi1_list.php'); // load listview class
-require_once(t3lib_extMgm::extPath('wt_directory') . 'pi1/class.tx_wtdirectory_pi1_detail.php'); // load detailview class
-require_once(t3lib_extMgm::extPath('wt_directory') . 'pi1/class.tx_wtdirectory_pi1_vcard.php'); // load vcard class
-if (t3lib_extMgm::isLoaded('wt_doorman', 0)) {
-	require_once(t3lib_extMgm::extPath('wt_doorman') . 'class.tx_wtdoorman_security.php'); // load security class
-}
+#if (\TYPO3\CMS\Core\Utility\ExtensionManagementUtility::isLoaded('wt_doorman', 0)) {
+#	require_once(\TYPO3\CMS\Core\Utility\ExtensionManagementUtility::extPath('wt_doorman') . 'class.tx_wtdoorman_security.php'); // load security class
+#}
 
 /**
  * Plugin 'wt_directory (tt_address list and detail view)' for the 'wt_directory' extension.
@@ -38,7 +33,7 @@ if (t3lib_extMgm::isLoaded('wt_doorman', 0)) {
  * @package	TYPO3
  * @subpackage	tx_wtdirectory
  */
-class tx_wtdirectory_pi1 extends tslib_pibase {
+class tx_wtdirectory_pi1 extends \TYPO3\CMS\Frontend\Plugin\AbstractPlugin {
 
 	public $extKey        = 'wt_directory';	// The extension key.
 	public $prefixId      = 'tx_wtdirectory_pi1';		// Same as class name
@@ -60,19 +55,19 @@ class tx_wtdirectory_pi1 extends tslib_pibase {
 		$this->pi_USER_INT_obj = 0;	// USER
 		$this->conf = array_merge($this->conf, (array) $this->cObj->data['pi_flexform']); // add flexform array to conf array
 		// Instances and security function
-		$this->div = t3lib_div::makeInstance('wtdirectory_div'); // Create new instance for div class
+		$this->div = \TYPO3\CMS\Core\Utility\GeneralUtility::makeInstance('wtdirectory_div'); // Create new instance for div class
 		$this->secure(); // Security options for piVars
 		$this->check(); // Check if all is alright
 		if (is_array($GLOBALS['TYPO3_CONF_VARS']['EXTCONF'][$this->extKey]['beforemain'])) { // Adds hook for processing
 			foreach ($GLOBALS['TYPO3_CONF_VARS']['EXTCONF'][$this->extKey]['beforemain'] as $_classRef) {
-				$_procObj = &t3lib_div::getUserObj($_classRef);
+				$_procObj = &\TYPO3\CMS\Core\Utility\GeneralUtility::getUserObj($_classRef);
 				$_procObj->beforemain($this->conf, $this->piVars, $this->cObj, $this);
 			}
 		}
 		// Main part
 		if (!empty($this->piVars['vCard'])) { // if vCard GET param was set: vcard export
 
-			$this->vCard = t3lib_div::makeInstance('tx_wtdirectory_pi1_vcard'); // Create new instance for vCard class
+			$this->vCard = \TYPO3\CMS\Core\Utility\GeneralUtility::makeInstance('tx_wtdirectory_pi1_vcard'); // Create new instance for vCard class
 			$this->vCardArray = $this->vCard->main($this->conf, $this->piVars, $this->cObj); // vCard Download
 			$this->content = $this->vCardArray['content'];
 			$this->hook(); // add hook
@@ -98,18 +93,18 @@ class tx_wtdirectory_pi1 extends tslib_pibase {
 					if ($this->conf['showView']) {
 						switch ($this->conf['showView']) {
 							case 'detailView':
-								$this->detailView = t3lib_div::makeInstance('tx_wtdirectory_pi1_detail'); // Create new instance for detail class
+								$this->detailView = \TYPO3\CMS\Core\Utility\GeneralUtility::makeInstance('tx_wtdirectory_pi1_detail'); // Create new instance for detail class
 								$this->content = $this->detailView->main($this->conf, $this->piVars, $this->cObj); // Detail view
 								break;
 						}
 					}
 
-					$this->listView = t3lib_div::makeInstance('tx_wtdirectory_pi1_list'); // Create new instance for list class
+					$this->listView = \TYPO3\CMS\Core\Utility\GeneralUtility::makeInstance('tx_wtdirectory_pi1_list'); // Create new instance for list class
 					$this->content = $this->listView->main($this->conf, $this->piVars, $this->cObj); // List view
 					break;
 
 				default: // piVars set: detail view
-					$this->detailView = t3lib_div::makeInstance('tx_wtdirectory_pi1_detail'); // Create new instance for detail class
+					$this->detailView = \TYPO3\CMS\Core\Utility\GeneralUtility::makeInstance('tx_wtdirectory_pi1_detail'); // Create new instance for detail class
 					$this->content = $this->detailView->main($this->conf, $this->piVars, $this->cObj); // Detail view
 					break;
 			}
@@ -130,11 +125,11 @@ class tx_wtdirectory_pi1 extends tslib_pibase {
 	private function secure() {
 		if (class_exists('tx_wtdoorman_security')) {
 			// 1. Get values from tt_news
-			$varsFromNews = t3lib_div::_GP('tx_ttnews');
+			$varsFromNews = \TYPO3\CMS\Core\Utility\GeneralUtility::_GP('tx_ttnews');
 			if (isset($varsFromNews['tt_news'])) $this->piVars['ttnews'] = $varsFromNews['tt_news'];
 
 			// 2. settings for doorman
-			$this->sec = t3lib_div::makeInstance('tx_wtdoorman_security'); // Create new instance for security class
+			$this->sec = \TYPO3\CMS\Core\Utility\GeneralUtility::makeInstance('tx_wtdoorman_security'); // Create new instance for security class
 			$this->sec->secParams = array ( // Allowed piVars type (int, text, alphanum, "value")
 				'show' => 'int', // show should be integer
 				'list' => '"all","none"', // list should be "all" or "none"
@@ -154,7 +149,7 @@ class tx_wtdirectory_pi1 extends tslib_pibase {
 			if ($GLOBALS['TYPO3_CONF_VARS']['EXTCONF'][$this->extKey]['piVars_hook']) {
 			   foreach($GLOBALS['TYPO3_CONF_VARS']['EXTCONF'][$this->extKey]['piVars_hook'] as $_funcRef) {
 				  if ($_funcRef) {
-					 t3lib_div::callUserFunction($_funcRef, $this->sec, $this);
+					 \TYPO3\CMS\Core\Utility\GeneralUtility::callUserFunction($_funcRef, $this->sec, $this);
 				  }
 			   }
 			}
@@ -185,7 +180,7 @@ class tx_wtdirectory_pi1 extends tslib_pibase {
 	private function hook() {
 		if (is_array($GLOBALS['TYPO3_CONF_VARS']['EXTCONF'][$this->extKey]['main'])) { // Adds hook for processing
 			foreach ($GLOBALS['TYPO3_CONF_VARS']['EXTCONF'][$this->extKey]['main'] as $_classRef) {
-				$_procObj = &t3lib_div::getUserObj($_classRef);
+				$_procObj = &\TYPO3\CMS\Core\Utility\GeneralUtility::getUserObj($_classRef);
 				$_procObj->main($this->content, $this->conf, $this->piVars, $this->cObj, $this);
 			}
 		}

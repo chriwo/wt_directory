@@ -22,9 +22,8 @@
 *  This copyright notice MUST APPEAR in all copies of the script!
 ***************************************************************/
 
-require_once(PATH_tslib . 'class.tslib_pibase.php');
 
-class wtdirectory_div extends tslib_pibase {
+class wtdirectory_div extends \TYPO3\CMS\Frontend\Plugin\AbstractPlugin {
 
 	public $extKey = 'wt_directory'; // Extension key
 	public $prefixId = 'tx_wtdirectory_pi1'; // Same as class name
@@ -242,7 +241,7 @@ class wtdirectory_div extends tslib_pibase {
 	public function conditions4DetailLink($row, $what, $conf) {
 		if ($conf['morelink_detail.']['condition']) { // if there is an entry in constants
 			$allow = 0; // don't allow at the beginning
-			$check4fields = t3lib_div::trimExplode(',', $conf['morelink_detail.']['condition'], 1); // like array('fax', 'mobile')
+			$check4fields = \TYPO3\CMS\Core\Utility\GeneralUtility::trimExplode(',', $conf['morelink_detail.']['condition'], 1); // like array('fax', 'mobile')
 			
 			for ($i=0; $i < count($check4fields); $i++ ) { // one loop for every field which should be checked
 				if ($row[$check4fields[$i]]) { // if there is an entry
@@ -270,10 +269,10 @@ class wtdirectory_div extends tslib_pibase {
 	public function setPiVars(&$piVars, $conf) {
 		if ($piVars['list'] != 'all' && $conf['filter.']['start'] && count($piVars)==0) { // if tx_wtdirectory_pi1[list]=all is not set AND filter.start is set in constants AND there are no other piVars
 			if (strpos($conf['filter.']['start'], 'shownone') === false) { // startfilter was set
-				$tmp_startfilter1 = t3lib_div::trimExplode(',', $conf['filter.']['start'], 1); // split at comma (result e.g. filter|last_name=a%)
+				$tmp_startfilter1 = \TYPO3\CMS\Core\Utility\GeneralUtility::trimExplode(',', $conf['filter.']['start'], 1); // split at comma (result e.g. filter|last_name=a%)
 				for ($i=0; $i < count($tmp_startfilter1); $i++) { // one loop for every filter to set
-					$tmp_startfilter2 = t3lib_div::trimExplode('=', $tmp_startfilter1[$i], 1); // split at = (result e.g. filter|last_name)
-					$tmp_startfilter3 = t3lib_div::trimExplode('|', $tmp_startfilter2[0], 1); // split at | (result e.g. filter)
+					$tmp_startfilter2 = \TYPO3\CMS\Core\Utility\GeneralUtility::trimExplode('=', $tmp_startfilter1[$i], 1); // split at = (result e.g. filter|last_name)
+					$tmp_startfilter3 = \TYPO3\CMS\Core\Utility\GeneralUtility::trimExplode('|', $tmp_startfilter2[0], 1); // split at | (result e.g. filter)
 					if (count($tmp_startfilter3) == 1) { // piVar in first level
 						$piVars[$tmp_startfilter3[0]] = $tmp_startfilter2[1]; // set piVars like tx_wtdirectory_pi1[filter][last_name]=a%
 					} else { // piVar in second level
@@ -350,7 +349,7 @@ class wtdirectory_div extends tslib_pibase {
 		if (!isset($row[0]['pid']) || $row[0]['pid'] < 1) { // if there is no pid
 			return false; // return 0
 		}
-		if (!t3lib_div::inList($this->pi_getPidList($this->cObj->data['pages'], $this->cObj->data['recursive']), $row[0]['pid'])) { // if the pid is not within the startingpath
+		if (!\TYPO3\CMS\Core\Utility\GeneralUtility::inList($this->pi_getPidList($this->cObj->data['pages'], $this->cObj->data['recursive']), $row[0]['pid'])) { // if the pid is not within the startingpath
 			return false; // return 0
 		}
 		
@@ -371,7 +370,7 @@ class wtdirectory_div extends tslib_pibase {
 				}
 			}
 			
-			$allowed_cat = t3lib_div::trimExplode(',', $this->pi_getFFvalue($this->conf, 'category', 'mainconfig'), 1); // array with allowed categories
+			$allowed_cat = \TYPO3\CMS\Core\Utility\GeneralUtility::trimExplode(',', $this->pi_getFFvalue($this->conf, 'category', 'mainconfig'), 1); // array with allowed categories
 			
 			if ($this->pi_getFFvalue($this->conf, 'category', 'mainconfig') == '') { // if there is no category chosen in backend
 				return false; // return 0
@@ -397,7 +396,7 @@ class wtdirectory_div extends tslib_pibase {
 		$cat = array();
 		
 		// let's go
-		$cat = t3lib_div::trimExplode(',', $this->pi_getFFvalue($this->conf, 'category', 'mainconfig'), 1); // all chosen categories in an array
+		$cat = \TYPO3\CMS\Core\Utility\GeneralUtility::trimExplode(',', $this->pi_getFFvalue($this->conf, 'category', 'mainconfig'), 1); // all chosen categories in an array
 		
 		if ($this->conf['filter.']['cat.']['showAllInDropdown']) { // if showAllInDropdown was set via constants
 			$res = $GLOBALS['TYPO3_DB']->exec_SELECTquery ( // DB query
@@ -432,7 +431,7 @@ class wtdirectory_div extends tslib_pibase {
 	 */
 	public function encodeBase64($img) {
 		if (!empty($img) && file_exists($img)) { // if file really exists
-			$code = t3lib_div::getURL($img); // read image
+			$code = \TYPO3\CMS\Core\Utility\GeneralUtility::getURL($img); // read image
 			$code = base64_encode($code); // encode code
 			return $code; // return
 		}
@@ -465,7 +464,7 @@ class wtdirectory_div extends tslib_pibase {
 	 * @return   array		Array with field values
 	 */
 	public function getAllValuesFromField($field, $cObj, $conf) {
-		$tree = t3lib_div::makeInstance('t3lib_queryGenerator'); // make instance for query generator class
+		$tree = \TYPO3\CMS\Core\Utility\GeneralUtility::makeInstance('t3lib_queryGenerator'); // make instance for query generator class
 		$arr = array();
 		$table = 'tt_address';
 		if ($field == 'addressgroup') { // rewrite table and field for grouptitle
@@ -483,8 +482,8 @@ class wtdirectory_div extends tslib_pibase {
 		';
 		$where = '1';
 		$where .= (!empty($pids) ? ' AND ' . $table . '.pid IN (' . $pids . ')' : '');
-		if (t3lib_extMgm::isLoaded('static_info_tables', 0) && $this->pi_getFFvalue($conf, 'countryfilter', 'mainconfig')) { // countryfilter only
-			$allowedCountries = t3lib_div::trimExplode(',', $this->pi_getFFvalue($conf, 'countryfilter', 'mainconfig'), 1);
+		if (\TYPO3\CMS\Core\Utility\ExtensionManagementUtility::isLoaded('static_info_tables', 0) && $this->pi_getFFvalue($conf, 'countryfilter', 'mainconfig')) { // countryfilter only
+			$allowedCountries = \TYPO3\CMS\Core\Utility\GeneralUtility::trimExplode(',', $this->pi_getFFvalue($conf, 'countryfilter', 'mainconfig'), 1);
 			$where .= ' AND (';
 			for ($i = 0; $i < count($allowedCountries); $i++) { // one loop for every chosen country
 				$fields = $this->getCountriesTitlesFromUid($allowedCountries[$i]);
@@ -617,7 +616,7 @@ class wtdirectory_div extends tslib_pibase {
 		for ($i = 0; $i < count($cats); $i++) {
 			$string .= 'group' . $cats[$i] . ',';
 		}
-		return t3lib_div::rm_endcomma($string);
+		return \TYPO3\CMS\Core\Utility\GeneralUtility::rm_endcomma($string);
 	}
 
 	/**
@@ -660,7 +659,7 @@ class wtdirectory_div extends tslib_pibase {
 	 * @return	string		Cleaned Commaseparated list
 	 */
 	public function intList($list) {
-		$intList = t3lib_div::intExplode(',', $list, 1);
+		$intList = \TYPO3\CMS\Core\Utility\GeneralUtility::intExplode(',', $list, 1);
 
 		return implode(',', $intList);
 	}
@@ -676,14 +675,14 @@ class wtdirectory_div extends tslib_pibase {
 		if ( // stop if
 			$pObj->conf['enable.']['static_info_tables'] == 0  || // rewrite turned off in constants
 			strlen($iso) > 3 || // this could not be an ISO code
-			!t3lib_extMgm::isLoaded('static_info_tables', 0) // static_info_tables not loaded
+			!\TYPO3\CMS\Core\Utility\ExtensionManagementUtility::isLoaded('static_info_tables', 0) // static_info_tables not loaded
 		) {
 			return $iso;
 		}
 
 		// fe engine from static_info_tables
-		require_once(t3lib_extMgm::extPath('static_info_tables') . 'pi1/class.tx_staticinfotables_pi1.php');
-		$staticInfoObj = &t3lib_div::getUserObj('&tx_staticinfotables_pi1');
+		require_once(\TYPO3\CMS\Core\Utility\ExtensionManagementUtility::extPath('static_info_tables') . 'pi1/class.tx_staticinfotables_pi1.php');
+		$staticInfoObj = &\TYPO3\CMS\Core\Utility\GeneralUtility::getUserObj('&tx_staticinfotables_pi1');
 		if ($staticInfoObj->needsInit()){
 			$staticInfoObj->init();
 		}
@@ -704,8 +703,8 @@ class wtdirectory_div extends tslib_pibase {
 	 */
 	public function getCoordinatesFromZip($geocodeurl = 'http://fa-technik.adfc.de/code/opengeodb/PLZ.tab') {
 		$arr = array();
-		$table = t3lib_div::getUrl($geocodeurl); // read url
-		$lines = t3lib_div::trimExplode("\n", $table, 1); // split every line
+		$table = \TYPO3\CMS\Core\Utility\GeneralUtility::getUrl($geocodeurl); // read url
+		$lines = \TYPO3\CMS\Core\Utility\GeneralUtility::trimExplode("\n", $table, 1); // split every line
 		for ($i = 0; $i < count($lines); $i++) { // one loop for every line
 			$line = explode("\t", $lines[$i]);
 			$arr[$line[1]] = array (
@@ -725,7 +724,7 @@ class wtdirectory_div extends tslib_pibase {
 	 * @return	array		All titles from a country (DE, DEU, Germany, Deutschland)
 	 */
 	public function getCountriesTitlesFromUid($uid) {
-		if (!t3lib_extMgm::isLoaded('static_info_tables', 0)) {
+		if (!\TYPO3\CMS\Core\Utility\ExtensionManagementUtility::isLoaded('static_info_tables', 0)) {
 			return array();
 		}
 		
